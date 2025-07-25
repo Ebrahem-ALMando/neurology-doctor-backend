@@ -24,7 +24,7 @@ class ConsultationMessageResource extends JsonResource
                     'id' => $this->sender->id,
                     'name' => $this->sender->name,
                     'role' => $this->sender->role,
-                    'avatar_url' => $this->sender->avatar ? \Storage::disk('public')->url('users/' . $this->sender->avatar) : null,
+                    'avatar_url' => $this->sender->avatar ? \Storage::disk('uploads')->url('users/' . $this->sender->avatar) : null,
                 ];
             }),
             'attachments' => ConsultationAttachmentResource::collection($this->whenLoaded('attachments')),

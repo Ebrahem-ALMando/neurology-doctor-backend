@@ -26,7 +26,7 @@ class ConsultationStatusLogResource extends JsonResource
                     'phone' => $this->changer->phone,
                     'changer_type' => $this->changed_by_type,
                     'avatar' => $this->changer->avatar,
-                    'avatar_url' => $this->changer->avatar ? \Storage::disk('public')->url('users/' . $this->changer->avatar) : null,
+                    'avatar_url' => $this->changer->avatar ? \Storage::disk('uploads')->url('users/' . $this->changer->avatar) : null,
                     'gender' => $this->changer->gender,
                     'birthdate' => $this->changer->birthdate,
                     'blood_type' => $this->changer->blood_type,

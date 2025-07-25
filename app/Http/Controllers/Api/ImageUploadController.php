@@ -35,6 +35,7 @@ class ImageUploadController extends Controller
             $results = [];
             $errors = [];
             foreach ($files as $file) {
+                $originalName = $file->getClientOriginalName();
                 $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
                 if (!$image) {
                     $errors[] = $file->getClientOriginalName();
@@ -45,11 +46,14 @@ class ImageUploadController extends Controller
                 ob_start();
                 imagewebp($image, null, 100);
                 $webpData = ob_get_clean();
-                Storage::disk('public')->put($path, $webpData);
+                Storage::disk('uploads')->put($path, $webpData);
                 imagedestroy($image);
                 $results[] = [
                     'image_name' => $imageName,
-                    'image_url' => Storage::disk('public')->url($path),
+                    'image_url' => Storage::disk('uploads')->url($path),
+                    'image_original_name' => $originalName,
+                    'image_path' => $path,
+                    'image_size' => $file->getSize(),
                 ];
             }
             return $this->successResponse(

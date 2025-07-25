@@ -23,7 +23,7 @@ class ConsultationResource extends JsonResource
                     'id' => $this->patient->id,
                     'name' => $this->patient->name,
                     'role' => $this->patient->role,
-                    'avatar_url' => $this->patient->avatar ? \Storage::disk('public')->url('users/' . $this->patient->avatar) : null,
+                    'avatar_url' => $this->patient->avatar ? \Storage::disk('uploads')->url('users/' . $this->patient->avatar) : null,
                 ];
             }),
             'doctor' => $this->whenLoaded('doctor', function () {
@@ -31,7 +31,7 @@ class ConsultationResource extends JsonResource
                     'id' => $this->doctor->id,
                     'name' => $this->doctor->name,
                     'role' => $this->doctor->role,
-                    'avatar_url' => $this->doctor->avatar ? \Storage::disk('public')->url('users/' . $this->doctor->avatar) : null,
+                    'avatar_url' => $this->doctor->avatar ? \Storage::disk('uploads')->url('users/' . $this->doctor->avatar) : null,
                 ];
             }),
             'last_sender' => $this->whenLoaded('lastSender', function () {
@@ -39,12 +39,13 @@ class ConsultationResource extends JsonResource
                     'id' => $this->lastSender->id,
                     'name' => $this->lastSender->name,
                     'role' => $this->lastSender->role,
-                    'avatar_url' => $this->lastSender->avatar ? \Storage::disk('public')->url('users/' . $this->lastSender->avatar) : null,
+                    'avatar_url' => $this->lastSender->avatar ? \Storage::disk('uploads')->url('users/' . $this->lastSender->avatar) : null,
                 ];
             }),
             'messages' => ConsultationMessageResource::collection($this->whenLoaded('messages')),
             'attachments' => ConsultationAttachmentResource::collection($this->whenLoaded('attachments')),
             'status_logs' => ConsultationStatusLogResource::collection($this->whenLoaded('statusLogs')),
+            'last_message' => $this->last_message ? new ConsultationMessageResource($this->last_message) : null,
         ];
     }
 }

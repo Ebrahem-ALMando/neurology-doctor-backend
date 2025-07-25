@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\ConsultationMessageController;
+
 use App\Http\Controllers\Api\ConsultationAttachmentController;
 use App\Http\Controllers\Api\ConsultationStatusLogController;
 /*
@@ -102,6 +103,9 @@ Route::middleware(['api.key'])->group(function () {
         Route::delete('/consultation-messages/{id}', [ConsultationMessageController::class, 'destroy']);
         Route::patch('/consultation-messages/{id}/read-by-patient', [ConsultationMessageController::class, 'markAsReadByPatient']);
         Route::patch('/consultation-messages/{id}/read-by-doctor', [ConsultationMessageController::class, 'markAsReadByDoctor']);
+        Route::post('consultations/{consultation}/typing', [ConsultationMessageController::class, 'typing']);
+        Route::get('consultations/{consultation}/messages/last', [ConsultationMessageController::class, 'lastMessage']);
+        Route::get('consultations/{consultation}/messages/unread-count', [ConsultationMessageController::class, 'unreadCount']);
 
         // Attachments
         Route::get('/consultation-attachments', [ConsultationAttachmentController::class, 'index']);
@@ -115,6 +119,9 @@ Route::middleware(['api.key'])->group(function () {
     Route::get('/test', function () {
         return ['message' => 'API Key works!'];
     });
+});
+Route::get('/check-path', function () {
+    return base_path('public/uploads');
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

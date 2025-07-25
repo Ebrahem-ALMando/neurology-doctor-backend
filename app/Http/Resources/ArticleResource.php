@@ -17,6 +17,7 @@ class ArticleResource extends JsonResource
                 'id' => $this->doctor->id,
                 'name' => $this->doctor->name,
                 'avatar' => $this->doctor->avatar,
+                'avatar_url' => $this->doctor->avatar ? \Storage::disk('uploads')->url('users/' . $this->doctor->avatar) : null,
             ] : null,
             'category' => $this->category ? [
                 'id' => $this->category->id,

@@ -18,6 +18,7 @@ class ArticleCommentResource extends JsonResource
                 'id' => $this->user->id ?? null,
                 'name' => $this->user->name ?? null,
                 'avatar' => $this->user->avatar ?? null,
+                'avatar_url' => $this->user->avatar ? \Storage::disk('uploads')->url('users/' . $this->user->avatar) : null,
             ],
             'parent_id' => $this->parent_id,
             'content' => $this->content,

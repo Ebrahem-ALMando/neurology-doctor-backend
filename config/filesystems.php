@@ -55,6 +55,13 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+   
+        'uploads' => [
+            'driver' => 'local',
+            'root' => env('UPLOADS_PATH', base_path('public/uploads')),
+            'url' => env('APP_URL') . '/uploads',
+            'visibility' => 'public',
+        ],
 
     ],
 

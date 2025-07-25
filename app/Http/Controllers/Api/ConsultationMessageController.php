@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use App\Events\NewConsultationMessage;
+use App\Events\TypingIndicator;
+use App\Models\Consultation;
 
 class ConsultationMessageController extends Controller
 {
@@ -105,6 +108,8 @@ class ConsultationMessageController extends Controller
                     ]);
                 }
             }
+            // إطلاق حدث البث بعد حفظ الرسالة
+            event(new NewConsultationMessage($message));
             DB::commit();
             $message->load(['sender', 'attachments']);
             // Placeholder for live event (broadcast)
@@ -164,8 +169,10 @@ class ConsultationMessageController extends Controller
             }
             $message->read_by_patient = true;
             $message->save();
-            return $this->successResponse(new ConsultationMessageResource($message), 'Marked as read by patient');
-        } catch (Exception $e) {
+            // بث للطرف الآخر
+            event(new NewConsultationMessage($message));
+            return $this->successResponse(new ConsultationMessageResource($message), 'Message marked as read by patient');
+        } catch (\Exception $e) {
             return $this->errorResponse('Failed to mark as read', 500, ['exception' => $e->getMessage()]);
         }
     }
@@ -174,15 +181,61 @@ class ConsultationMessageController extends Controller
     public function markAsReadByDoctor($id)
     {
         try {
-            $message = ConsultationMessage::find($id);
+            $message = \App\Models\ConsultationMessage::find($id);
             if (!$message) {
                 return $this->errorResponse('Message not found', 404);
             }
             $message->read_by_doctor = true;
             $message->save();
-            return $this->successResponse(new ConsultationMessageResource($message), 'Marked as read by doctor');
-        } catch (Exception $e) {
+            // بث للطرف الآخر
+            event(new NewConsultationMessage($message));
+            return $this->successResponse(new ConsultationMessageResource($message), 'Message marked as read by doctor');
+        } catch (\Exception $e) {
             return $this->errorResponse('Failed to mark as read', 500, ['exception' => $e->getMessage()]);
         }
+    }
+
+    // مؤشر الكتابة (Typing Indicator)
+    public function typing(Request $request, $consultation_id)
+    {
+        event(new TypingIndicator($consultation_id, auth()->id()));
+        return $this->successResponse(null, 'Typing event broadcasted');
+    }
+
+    // جلب آخر رسالة في الاستشارة
+    public function lastMessage($consultation_id)
+    {
+        $message = ConsultationMessage::where('consultation_id', $consultation_id)
+            ->orderByDesc('created_at')
+            ->with(['sender', 'attachments'])
+            ->first();
+        if (!$message) {
+            return $this->errorResponse('No messages found', 404);
+        }
+        return $this->successResponse(new ConsultationMessageResource($message), 'Last message fetched');
+    }
+
+    // جلب عدد الرسائل غير المقروءة للمستخدم الحالي
+    public function unreadCount($consultation_id)
+    {
+        $user = auth()->user();
+        $consultation = Consultation::find($consultation_id);
+        if (!$consultation) {
+            return $this->errorResponse('Consultation not found', 404);
+        }
+        $isDoctor = $user->id == $consultation->doctor_id;
+        $isPatient = $user->id == $consultation->patient_id;
+        $isAdmin = $user->role === 'admin';
+        if (!($isDoctor || $isPatient || $isAdmin)) {
+            return $this->errorResponse('Unauthorized,invalid user type', 403);
+        }
+        $query = ConsultationMessage::where('consultation_id', $consultation_id);
+        if ($isDoctor || $isAdmin) {
+            $query->where('read_by_doctor', false)->where('sender_type', 'patient');
+        } else {
+            $query->where('read_by_patient', false)->where('sender_type', 'doctor');
+        }
+        $count = $query->count();
+        return $this->successResponse(['unread_count' => $count], 'Unread messages count fetched');
     }
 }

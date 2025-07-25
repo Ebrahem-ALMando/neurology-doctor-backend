@@ -20,7 +20,8 @@ class ConsultationController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Consultation::with(['patient', 'doctor', 'lastSender', 'messages', 'attachments', 'statusLogs']);
+            $with = ['patient', 'doctor', 'lastSender', 'messages', 'attachments', 'statusLogs'];
+            $query = Consultation::with($with);
             if ($request->has('status')) {
                 $query->where('status', $request->status);
             }
@@ -31,6 +32,11 @@ class ConsultationController extends Controller
                 $query->where('doctor_id', $request->doctor_id);
             }
             $consultations = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', 20));
+            // أضف last_message لكل استشارة دائماً
+            $consultations->getCollection()->transform(function ($consultation) {
+                $consultation->last_message = $consultation->messages->sortByDesc('created_at')->first();
+                return $consultation;
+            });
             return $this->successResponse(
                 ConsultationResource::collection($consultations),
                 'Consultations fetched successfully',

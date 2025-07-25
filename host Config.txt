@@ -1,0 +1,12 @@
+host:ftp://ftp.prog.eilmalriyada.com/
+username:u637740705.ebrahem
+password:B20012001b*
+port: 21
+ssh -p 65002 u637740705@145.223.89.186
+password:B20012001b*
+command:
+cd domains/prog.eilmalriyada.com/
+cd domains/prog.eilmalriyada.com/public_html/
+ls
+unzip neuroclinic.zip
+php artisan migarte

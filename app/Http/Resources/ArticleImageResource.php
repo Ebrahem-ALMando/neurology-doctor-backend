@@ -19,7 +19,7 @@ class ArticleImageResource extends JsonResource
             'folder' => $this->folder,
             'is_cover' => (bool) $this->is_cover,
             'caption' => $this->caption,
-            'image_url' => Storage::disk('public')->url($this->folder . '/' . $this->image_name),
+            'image_url' => Storage::disk('uploads')->url($this->folder . '/' . $this->image_name),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

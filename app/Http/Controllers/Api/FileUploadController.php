@@ -51,16 +51,18 @@ class FileUploadController extends Controller
                         ob_start();
                         imagewebp($image, null, 100);
                         $webpData = ob_get_clean();
-                        Storage::disk('public')->put($path, $webpData);
+                        Storage::disk('uploads')->put($path, $webpData);
                         imagedestroy($image);
                     } else {
-                        Storage::disk('public')->put($path, file_get_contents($file->getRealPath()));
+                        Storage::disk('uploads')->put($path, file_get_contents($file->getRealPath()));
                     }
                     $results[] = [
-                        'file_name' => $fileName,
-                        'file_url' => Storage::disk('public')->url($path),
-                        'file_type' => $fileType,
                         'original_name' => $originalName,
+                        'file_name' => $fileName,
+                        'file_type' => $fileType,
+                        'file_path' => $path,
+                        'file_url' => Storage::disk('uploads')->url($path),
+                        'file_size' => $file->getSize(),
                     ];
                 } catch (Exception $e) {
                     $errors[] = $originalName;
