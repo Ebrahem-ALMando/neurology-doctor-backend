@@ -5,9 +5,9 @@
 ### أ. إعدادات .env
 ```env
 BROADCAST_DRIVER=pusher
-PUSHER_APP_ID=2027799
-PUSHER_APP_KEY=07bde3e92cfef0fbf03a
-PUSHER_APP_SECRET=a4e081c28a580d2d0b
+PUSHER_APP_ID=2027759
+PUSHER_APP_KEY=075be5c32f5efcf0fb3a
+PUSHER_APP_SECRET=e4a081c25a58556d2dbb
 PUSHER_APP_CLUSTER=eu
 PUSHER_HOST=
 PUSHER_PORT=443
@@ -65,7 +65,7 @@ window.Pusher = Pusher;
 
 export const echo = new Echo({
   broadcaster: "pusher",
-  key: "07bde3e92cfef0fbf03a",
+  key: "075be5c32f5efcf0fb3a",
   cluster: "eu",
   forceTLS: true,
   encrypted: true,
@@ -116,7 +116,7 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 final pusher = PusherChannelsFlutter.getInstance();
 
 await pusher.init(
-  apiKey: "07bde3e92cfef0fbf03a",
+  apiKey: "075be5c32f5efcf0fb3a",
   cluster: "eu",
   onConnectionStateChange: (x) => print(x.currentState),
   onError: (x) => print(x.message),
